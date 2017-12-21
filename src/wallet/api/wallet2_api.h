@@ -95,6 +95,16 @@ struct PendingTransaction
 };
 
 /**
+ * @brief Transfer - contains information for displaying a transfer
+ */
+ struct Transfer
+ {
+     virtual uint64_t amount() const = 0;
+     virtual std::string address() const = 0;
+     virtual ~Transfer() = 0;
+ };
+
+/**
  * @brief Transaction-like interface for sending money
  */
 struct UnsignedTransaction
@@ -115,13 +125,11 @@ struct UnsignedTransaction
     virtual ~UnsignedTransaction() = 0;
     virtual int status() const = 0;
     virtual std::string errorString() const = 0;
-    virtual std::vector<uint64_t> amount() const = 0;
-    virtual std::vector<uint64_t>  fee() const = 0;
+    virtual std::vector<uint64_t> fee() const = 0;
     virtual std::vector<uint64_t> mixin() const = 0;
     // returns a string with information about all transactions.
     virtual std::string confirmationMessage() const = 0;
     virtual std::vector<std::string> paymentId() const = 0;
-    virtual std::vector<std::string> recipientAddress() const = 0;
     virtual uint64_t minMixinCount() const = 0;
     /*!
      * \brief txCount - number of transactions current transaction will be splitted to
@@ -134,22 +142,18 @@ struct UnsignedTransaction
     * return - true on success
     */
     virtual bool sign(const std::string &signedFileName) = 0;
+    virtual const std::vector<std::vector<std::unique_ptr<Transfer>>> transfers() const = 0;
 };
 
+
 /**
- * @brief The TransactionInfo - interface for displaying transaction information
- */
+* @brief The TransactionInfo - interface for displaying transaction information
+*/
 struct TransactionInfo
 {
     enum Direction {
         Direction_In,
         Direction_Out
-    };
-
-    struct Transfer {
-        Transfer(uint64_t _amount, const std::string &address);
-        const uint64_t amount;
-        const std::string address;
     };
 
     virtual ~TransactionInfo() = 0;
@@ -169,7 +173,7 @@ struct TransactionInfo
     virtual std::time_t timestamp() const = 0;
     virtual std::string paymentId() const = 0;
     //! only applicable for output transactions
-    virtual const std::vector<Transfer> & transfers() const = 0;
+    virtual const std::vector<std::unique_ptr<Transfer>> & transfers() const = 0;
 };
 /**
  * @brief The TransactionHistory - interface for displaying transaction history

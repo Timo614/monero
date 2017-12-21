@@ -40,6 +40,7 @@ set(wallet_api_sources
   address_book.cpp
   subaddress.cpp
   subaddress_account.cpp
+  transfer.cpp
   unsigned_transaction.cpp)
 
 set(wallet_api_headers
@@ -55,6 +56,7 @@ set(wallet_api_private_headers
   address_book.h
   subaddress.h
   subaddress_account.h
+  transfer.h
   unsigned_transaction.h)
 
 monero_private_headers(wallet_api

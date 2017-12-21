@@ -41,6 +41,7 @@
 
 
 namespace Monero {
+class TransferImpl;
 class TransactionHistoryImpl;
 class PendingTransactionImpl;
 class UnsignedTransactionImpl;

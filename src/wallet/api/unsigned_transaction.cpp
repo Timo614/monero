@@ -28,6 +28,7 @@
 //
 // Parts of this file are originally copyright (c) 2012-2013 The Cryptonote developers
 
+#include "transfer.h"
 #include "unsigned_transaction.h"
 #include "wallet.h"
 #include "common_defines.h"
@@ -215,17 +216,6 @@ bool UnsignedTransactionImpl::checkLoadedTx(const std::function<size_t()> get_nu
   return true;
 }
 
-std::vector<uint64_t> UnsignedTransactionImpl::amount() const
-{
-    std::vector<uint64_t> result;
-    for (const auto &utx : m_unsigned_tx_set.txes)   {
-        for (const auto &unsigned_dest : utx.dests) {
-            result.push_back(unsigned_dest.amount);
-        }
-    }
-    return result;
-}
-
 std::vector<uint64_t> UnsignedTransactionImpl::fee() const
 {
     std::vector<uint64_t> result;
@@ -288,20 +278,6 @@ std::vector<std::string> UnsignedTransactionImpl::paymentId() const
     return result;
 }
 
-std::vector<std::string> UnsignedTransactionImpl::recipientAddress() const 
-{
-    // TODO: return integrated address if short payment ID exists
-    std::vector<string> result;
-    for (const auto &utx: m_unsigned_tx_set.txes) {
-        if (utx.dests.empty()) {
-          MERROR("empty destinations, skipped");
-          continue;
-        }
-        result.push_back(cryptonote::get_account_address_as_str(m_wallet.m_wallet->testnet(), utx.dests[0].is_subaddress, utx.dests[0].addr));
-    }
-    return result;
-}
-
 uint64_t UnsignedTransactionImpl::minMixinCount() const
 {    
     uint64_t min_mixin = ~0;  
@@ -313,6 +289,15 @@ uint64_t UnsignedTransactionImpl::minMixinCount() const
         }
     }
     return min_mixin;
+}
+
+const std::vector<std::vector<std::unique_ptr<Transfer>>> UnsignedTransactionImpl::transfers() const
+{
+    std::vector<std::vector<std::unique_ptr<Transfer>>> result(m_unsigned_tx_set.txes.size());
+    for (size_t s = 0; s < m_unsigned_tx_set.txes.size(); s++)
+        for (const auto &unsigned_destination : m_unsigned_tx_set.txes[s].dests)
+            result[s].emplace_back(new TransferImpl{unsigned_destination.amount, get_account_address_as_str(m_wallet.m_wallet->testnet(), unsigned_destination.is_subaddress, unsigned_destination.addr)});
+    return result;
 }
 
 } // namespace

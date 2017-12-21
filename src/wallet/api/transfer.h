@@ -30,58 +30,22 @@
 
 #include "wallet/api/wallet2_api.h"
 #include <string>
-#include <ctime>
 
 namespace Monero {
 
-class TransactionHistoryImpl;
-
-class TransactionInfoImpl : public TransactionInfo
+class TransferImpl : public Transfer
 {
 public:
-    TransactionInfoImpl();
-    ~TransactionInfoImpl();
-    //! in/out
-    virtual int direction() const;
-    //! true if hold
-    virtual bool isPending() const;
-    virtual bool isFailed() const;
+    TransferImpl(uint64_t amount, const std::string address);
+    ~TransferImpl();
     virtual uint64_t amount() const;
-    //! always 0 for incoming txes
-    virtual uint64_t fee() const;
-    virtual uint64_t blockHeight() const;
-    virtual std::set<uint32_t> subaddrIndex() const;
-    virtual uint32_t subaddrAccount() const;
-    virtual std::string label() const;
-
-    virtual std::string hash() const;
-    virtual std::time_t timestamp() const;
-    virtual std::string paymentId() const;
-    virtual const std::vector<std::unique_ptr<Transfer>> &transfers() const;
-    virtual uint64_t confirmations() const;
-    virtual uint64_t unlockTime() const;
-
+    virtual std::string address() const;
 private:
-    int         m_direction;
-    bool        m_pending;
-    bool        m_failed;
-    uint64_t    m_amount;
-    uint64_t    m_fee;
-    uint64_t    m_blockheight;
-    std::set<uint32_t> m_subaddrIndex;        // always unique index for incoming transfers; can be multiple indices for outgoing transfers
-    uint32_t m_subaddrAccount;
-    std::string m_label;
-    std::string m_hash;
-    std::time_t m_timestamp;
-    std::string m_paymentid;
-    std::vector<std::unique_ptr<Transfer>> m_transfers;
-    uint64_t    m_confirmations;
-    uint64_t    m_unlock_time;
-
-    friend class TransactionHistoryImpl;
-
+    const uint64_t m_amount;
+    const std::string m_address;
 };
 
-} // namespace
+}
 
 namespace Bitmonero = Monero;
+  

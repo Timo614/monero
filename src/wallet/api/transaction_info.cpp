@@ -37,10 +37,6 @@ namespace Monero {
 
 TransactionInfo::~TransactionInfo() {}
 
-TransactionInfo::Transfer::Transfer(uint64_t _amount, const string &_address)
-    : amount(_amount), address(_address) {}
-
-
 TransactionInfoImpl::TransactionInfoImpl()
     : m_direction(Direction_Out)
       , m_pending(false)
@@ -123,7 +119,7 @@ string TransactionInfoImpl::paymentId() const
     return m_paymentid;
 }
 
-const std::vector<TransactionInfo::Transfer> &TransactionInfoImpl::transfers() const
+const std::vector<std::unique_ptr<Transfer>> &TransactionInfoImpl::transfers() const
 {
     return m_transfers;
 }
